@@ -101,6 +101,12 @@ class Clan:
         game_mode="classic",
         starting_members=[],
         starting_season="Newleaf",
+        clan_backstory= "newly_formed",
+        clan_affiliation = "starclan",
+        #outsider_view = "",
+        made_app_age = "normal",
+        #clan_size_ideo = "",
+        #clan_age_ideo = "",
         self_run_init_functions=True,
     ):
         self.history = History()
@@ -129,6 +135,12 @@ class Clan:
         self.camp_bg = camp_bg
         self.chosen_symbol = symbol
         self.game_mode = game_mode
+        self.clan_backstory = clan_backstory
+        self.clan_affiliation = clan_affiliation
+        self.made_app_age = made_app_age
+        #self.outsider_view = outsider_view
+        #self.clan_age_ideo = clan_age_ideo
+        #self.clan_size_ideo = clan_size_ideo
         self.pregnancy_data = {}
         self.inheritance = {}
         self.custom_pronouns = {}
@@ -159,6 +171,34 @@ class Clan:
         # it's a range from 1-100, with 30-70 being neutral, 71-100 being "welcoming",
         # and 1-29 being "hostile". if you're hostile to outsiders, they will VERY RARELY show up.
         self._reputation = 80
+    
+
+        """
+        if outsider_view == "antagonistic":
+            self._reputation = randint(1, 19)
+        elif outsider_view == "defensive":
+            self._reputation = randint(20,29)
+        elif outsider_view == "neutral":
+            self._reputation = randint(30, 70)
+        elif outsider_view == "receptive":
+            self._reputation = randint(71,80)
+        elif outsider_view == "welcoming":
+            self._reputation = randint(81,99)
+        
+        #Clan age doesnt change much right now, just what is displayed for the player to see. 
+        if clan_age_ideo == "young":
+            self.age = 0
+        elif clan_age_ideo == "budding":
+            self.age = randint(6,12)
+        elif clan_age_ideo == "established":
+            self.age = randint(13,24)
+        elif clan_age_ideo == "seasoned":
+            self.age = randint (25, 36)
+        elif clan_age_ideo == "ancient":
+            self.age = randint(37, 48)
+        """
+
+        
 
         self.starting_members = starting_members
         if game_mode in ["expanded", "cruel season"]:
@@ -222,7 +262,11 @@ class Clan:
         self.instructor.dead = True
         self.instructor.dead_for = randint(20, 200)
         self.add_cat(self.instructor)
-        self.add_to_starclan(self.instructor)
+        if self.clan_affiliation == "darkforest":
+            self.instructor.df = True
+            self.add_to_darkforest(self.instructor)
+        else:
+            self.add_to_starclan(self.instructor)
         self.all_clans = []
 
         key_copy = tuple(Cat.all_cats.keys())
@@ -262,9 +306,20 @@ class Clan:
                 other_clan_name = choice(
                     names.names_dict["normal_prefixes"]
                     + names.names_dict["clan_prefixes"]
-                )
+                )            
             other_clan = OtherClan(name=other_clan_name)
             self.all_clans.append(other_clan)
+            
+        if self.clan_backstory == "newly_formed":
+            for clan in self.all_clans:
+                clan.relations = max(0, clan.relations - 3)
+        elif self.clan_backstory == "rebellious_uprising" and self.all_clans:
+            target_clan = choice(self.all_clans) 
+            target_clan.relations = max(0, target_clan.relations - 6)
+        elif self.clan_backstory == "branching_off" and self.all_clans:
+            target_clan = choice(self.all_clans)
+            target_clan.relations += 10
+
         self.save_clan()
         game.save_clanlist(self.name)
         game.switches["clan_list"] = game.read_clans()
@@ -485,6 +540,8 @@ class Clan:
             "version_commit": get_version_info().version_number,
             "source_build": get_version_info().is_source_build,
             "custom_pronouns": self.custom_pronouns,
+            "clan_backstory": self.clan_backstory,
+            "clan_affiliation": self.clan_affiliation,
         }
 
         # LEADER DATA
@@ -826,41 +883,17 @@ class Clan:
         game.clan.deputy_predecessors = clan_data["deputy_predecessors"]
         game.clan.med_cat_predecessors = clan_data["med_cat_predecessors"]
         game.clan.med_cat_number = clan_data["med_cat_number"]
-        # Allows for the custom pronouns to show up in the add pronoun list after the game has closed and reopened.
-        if "custom_pronouns" in clan_data.keys():
-            if clan_data["custom_pronouns"]:
-                if isinstance(clan_data["custom_pronouns"], list):
-                    # english-only pronouns from an old version
-                    game.clan.custom_pronouns["en"] = clan_data["custom_pronouns"]
-                else:
-                    game.clan.custom_pronouns = clan_data["custom_pronouns"]
-
-        # Instructor Info
-        if clan_data["instructor"] in Cat.all_cats:
-            game.clan.instructor = Cat.all_cats[clan_data["instructor"]]
-            game.clan.add_cat(game.clan.instructor)
-        else:
-            game.clan.instructor = Cat(status=choice(["warrior", "warrior", "elder"]))
-            # update_sprite(game.clan.instructor)
-            game.clan.instructor.dead = True
-            game.clan.add_cat(game.clan.instructor)
-
-        # check for symbol
-        if "clan_symbol" in clan_data:
-            game.clan.chosen_symbol = clan_data["clan_symbol"]
-        else:
-            game.clan.chosen_symbol = clan_symbol_sprite(game.clan, return_string=True)
 
         if "other_clans" in clan_data:
-            for other_clan in clan_data["other_clans"]:
-                game.clan.all_clans.append(
-                    OtherClan(
-                        other_clan["name"],
-                        int(other_clan["relations"]),
-                        other_clan["temperament"],
-                        other_clan["chosen_symbol"],
+                for other_clan in clan_data["other_clans"]:
+                    game.clan.all_clans.append(
+                        OtherClan(
+                            other_clan["name"],
+                            int(other_clan["relations"]),
+                            other_clan["temperament"],
+                            other_clan["chosen_symbol"],
+                        )
                     )
-                )
         else:
             if "other_clan_chosen_symbol" not in clan_data:
                 for name, relation, temper in zip(
@@ -1357,7 +1390,7 @@ class StarClan:
         TODO: DOCS
         """
         self.instructor = None
-
+        
     def fade(self, cat):
         """
         TODO: DOCS
