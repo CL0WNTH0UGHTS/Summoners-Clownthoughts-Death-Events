@@ -5882,7 +5882,7 @@
     "sub_type": ["murder"],
     "tags": ["lives_remain"],
     "weight": 30,
-      "event_text": "A warning from StarClan gave m_c enough knowledge to survive r_c's attack. r_c could not say the same.",
+    "event_text": "A warning from StarClan gave m_c enough knowledge to survive r_c's attack. r_c could not say the same.",
     "m_c": {
         "status": ["leader"],
         "skill": ["OMEN,1", "DREAM,1", "PROPHET,1", "GHOST,2", "STAR,1"],
@@ -5902,5 +5902,25 @@
             "reg_death": "r_c died after launching a failed assassination attempt on the Clan's leader."
         }
     ]
-  }
+  },
+  {
+    "event_id": "gen_death_newlandnewlyformed1",
+    "location": ["any"],
+    "season": ["any"],
+    "tags": ["newly_formed"],
+    "weight": 10,
+    "event_text": "Whilst patroling the territory new to c_n, m_c stumbled upon a strange predator. They didnt have time to react, before they were killed.",
+    "m_c": {
+        "status": ["any"],
+        "age": ["adolescent", "adult", "young adult", "senior adult"],
+        "dies": true
+    },
+    "history": [
+      {
+        "cats": ["m_c"],
+        "reg_death": "m_c was killed by a foreign predator.",
+        "lead_death": "{VERB/m_c/were/was} killed by a foreign predator"
+      }
+    ]
+    }
 ]
