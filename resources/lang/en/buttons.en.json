@@ -27,6 +27,16 @@
         "cancel": "cancel",
         "save_clan": "save clan",
         "saving": "saving...",
-        "clan_saved": "saved!"
+        "clan_saved": "saved!",
+        "random_button": "Random",
+        "dark_forest": "Dark Forest",
+        "starclan": "StarClan",
+        "newly_formed_group": "Newly Formed",
+        "branching_off_group": "Branching Off",
+        "rebellious_uprising_group": "Rebellious Uprising",
+        "old_world_group": "Old World",
+        "early_age": "Early",
+        "normal_age": "Normal",
+        "late_age": "Late"
     }
 }
