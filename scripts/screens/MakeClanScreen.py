@@ -61,6 +61,7 @@ class MakeClanScreen(Screens):
 
     cruel_mode_text = "screens.make_clan.cruel_season_info"
 
+
     # This section holds all the information needed
     game_mode = "classic"  # To save the users selection before conformation.
     clan_name = ""  # To store the Clan name before conformation
@@ -90,6 +91,15 @@ class MakeClanScreen(Screens):
 
     # used in symbol screen only - parent container is in element dict
     text = {}
+
+    #outsider_view = ""
+    clan_backstory = ""
+    clan_affiliation = ""
+    made_app_age = ""
+    #clan_age_ideo = ""
+    #clan_side_ideo = ""
+
+
 
     def __init__(self, name="make_clan_screen"):
         super().__init__(name)
@@ -142,6 +152,15 @@ class MakeClanScreen(Screens):
         self.med_cat = None
         self.members = []
 
+        self.clan_backstory: str = ""
+        self.clan_affiliation: str = ""
+
+        #This is for future PRS, after clan affil and clan backstory gets fixed
+        
+        self.made_app_age: str = ""
+        #self.clan_side_ideo: str = ""
+        
+
         # Buttons that appear on every screen.
         self.menu_warning = pygame_gui.elements.UITextBox(
             "screens.make_clan.menu_warning",
@@ -172,6 +191,11 @@ class MakeClanScreen(Screens):
                 self.handle_game_mode_event(event)
             elif self.sub_screen == "name clan":
                 self.handle_name_clan_event(event)
+
+
+            elif self.sub_screen == "affiliation":
+                self.handle_choose_clan_affiliation_event(event)
+            
             elif self.sub_screen == "choose leader":
                 self.handle_choose_leader_event(event)
             elif self.sub_screen == "choose deputy":
@@ -180,13 +204,21 @@ class MakeClanScreen(Screens):
                 self.handle_choose_med_event(event)
             elif self.sub_screen == "choose members":
                 self.handle_choose_members_event(event)
+
+            elif self.sub_screen == "ideology":
+                self.handle_choose_clan_backstory_event(event)
+
             elif self.sub_screen == "choose camp":
                 self.handle_choose_background_event(event)
             elif self.sub_screen == "choose symbol":
                 self.handle_choose_symbol_event(event)
+
+            elif self.sub_screen == "misc":
+                self.handle_choose_clan_misc_event(event)
+
             elif self.sub_screen == "saved screen":
                 self.handle_saved_clan_event(event)
-
+           
         elif event.type == pygame.KEYDOWN and game.settings["keybinds"]:
             if self.sub_screen == "game mode":
                 self.handle_game_mode_key(event)
@@ -272,10 +304,10 @@ class MakeClanScreen(Screens):
                 self.elements["error"].show()
                 return
             self.clan_name = new_name
-            self.open_choose_leader()
+            self.open_choose_affilitaion()
         elif event.ui_element == self.elements["previous_step"]:
             self.clan_name = ""
-            self.open_game_mode()
+            self.open_choose_affilitaion()
 
     def handle_name_clan_key(self, event):
         if event.key == pygame.K_ESCAPE:
@@ -302,7 +334,7 @@ class MakeClanScreen(Screens):
                     self.elements["error"].show()
                     return
                 self.clan_name = new_name
-                self.open_choose_leader()
+                self.open_choose_affilitaion()
         elif event.key == pygame.K_RETURN:
             new_name = sub(
                 r"[^A-Za-z0-9 ]+", "", self.elements["name_entry"].get_text()
@@ -318,7 +350,44 @@ class MakeClanScreen(Screens):
                 self.elements["error"].show()
                 return
             self.clan_name = new_name
+            self.open_choose_affilitaion()
+
+
+
+    def handle_choose_clan_affiliation_event(self, event):
+        """Handles user interface events related to the clan affiliation selection of ideology:
+
+        :param event: contains user interface and what the user interacts with
+        :type event: pygame.event.Event
+
+        :behavior:
+        - clan_affiliation changes where the player clans instructor (commonly called guide) goes upon the start of the clan,
+            changing where cats go upon death.
+        -If "previous_step" is clicked, the player receeds to choosing their clans name, 
+            if "next_step" is clicked the player proceeds to choosing their starter group of cats.
+        - If the user selects "starclan", clan_affiliation will store "starclan."
+            This is the same process for all other options.
+
+        """
+
+        if event.ui_element == self.elements["previous_step"]:
+            self.clan_affiliation = ""
+            self.open_name_clan()
+        elif event.ui_element == self.elements["starclan"]:
+            self.clan_affiliation = "starclan"
+            self.elements["next_step"].enable()
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["dark_forest"]:
+            self.clan_affiliation = "darkforest"
+            self.elements["next_step"].enable()
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["random_button"]:
+            self.clan_affiliation = "random"
+            self.elements["next_step"].enable()
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["next_step"]:
             self.open_choose_leader()
+    
 
     def handle_choose_leader_event(self, event):
         if event.ui_element in [
@@ -434,12 +503,87 @@ class MakeClanScreen(Screens):
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["next_step"]:
             self.selected_cat = None
+            self.open_choose_backstory()
+    
+
+    def handle_choose_clan_backstory_event(self, event):
+        """Handles user interface events related to the clan backstory selection of ideology:
+
+        :param event: contains user interface and what the user interacts with
+        :type event: pygame.event.Event
+
+        :behavior:
+        - clan_backstory, upon clan creation, changes other_clan relation(s) to the playerclan.
+            It also allows events limited to the specific clan_backstory to generate.
+        -If "previous_step" is clicked, the player receeds to choosing their clans symbol, 
+            if "next_step" is clicked the player proceeds to choosing their clans affiliation.
+        - If the user clicks on "newly_formed_group", clan_backstory will store "newly_formed."
+            This is the same process for all other options.
+        """
+    
+        if event.ui_element == self.elements["previous_step"]:
+            self.clan_backstory = ""
+            #self.clan_age_ideo = ""
+            #self.clan_side_ideo = ""
+            self.open_choose_members()
+        
+        elif event.ui_element == self.elements["newly_formed_group"]:
+            self.clan_backstory = "newly_formed"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["branching_off_group"]:
+            self.clan_backstory = "branching_off"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["rebellious_uprising_group"]:
+            self.clan_backstory = "rebellious_uprising"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["old_world_group"]:
+            self.clan_backstory = "old world"
+            self.refresh_text_and_buttons()
+
+
+        """
+        if event.ui_element == self.elements["young_age"]:
+            self.clan_age_ideo = "young"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["budding_age"]:
+            self.clan_age_ideo = "budding"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["established_age"]:
+            self.clan_age_ideo = "established"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["seasoned_age"]:
+            self.clan_age_ideo = "seasoned"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["ancient_age"]:
+            self.clan_age_ideo = "ancient"
+            self.refresh_text_and_buttons()
+        
+        #clan_side_ideo information: tiny is half a page, medium is one full page, moderate is two, substantial is 3, and enormous is endless
+        if event.ui_element == self.elements["tiny_size"]:
+            self.clan_side_ideo = "tiny"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["medium_size"]:
+            self.clan_side_ideo = "medium"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["moderate_size"]:
+            self.clan_side_ideo = "moderate"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["substantial_size"]:
+            self.clan_side_ideo = "substantial"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["enormous_size"]:
+            self.clan_side_ideo = "enormous"
+            self.refresh_text_and_buttons()
+        """
+
+
+        if event.ui_element == self.elements["next_step"]:
             self.open_choose_background()
 
     def handle_choose_background_event(self, event):
         if event.ui_element == self.elements["previous_step"]:
             self.set_bg(None)
-            self.open_choose_members()
+            self.open_choose_backstory()
         elif event.ui_element == self.elements["forest_biome"]:
             self.biome_selected = "Forest"
             self.selected_camp_tab = 1
@@ -492,6 +636,8 @@ class MakeClanScreen(Screens):
         elif event.ui_element == self.elements["next_step"]:
             self.open_choose_symbol()
 
+    
+
     def handle_choose_background_key(self, event):
         if event.key == pygame.K_RIGHT:
             if self.biome_selected is None:
@@ -536,9 +682,8 @@ class MakeClanScreen(Screens):
         elif event.ui_element == self.elements["page_left"]:
             self.current_page -= 1
             self.refresh_symbol_list()
-        elif event.ui_element == self.elements["done_button"]:
-            self.save_clan()
-            self.open_clan_saved_screen()
+        elif event.ui_element == self.elements["next_step"]:
+            self.open_choose_misc()
         elif event.ui_element == self.elements["random_symbol_button"]:
             if self.symbol_selected:
                 if self.symbol_selected in self.symbol_buttons:
@@ -555,6 +700,59 @@ class MakeClanScreen(Screens):
                             self.symbol_buttons[self.symbol_selected].enable()
                     self.symbol_selected = symbol_id
                     self.refresh_text_and_buttons()
+
+    def handle_choose_clan_misc_event(self, event):
+        """Handles user interface events related to the clan affiliation selection of ideology:
+
+        :param event: contains user interface and what the user interacts with
+        :type event: pygame.event.Event
+
+        :behavior:
+        -will update
+        """
+
+        if event.ui_element == self.elements["previous_step"]:
+            #self.outsider_view = ""
+            self.made_app_age = ""
+            self.open_choose_symbol()
+
+        """
+        elif event.ui_element == self.elements["Antagonistic"]:
+            self.outsider_view = "antagonistic"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["Defensive"]:
+            self.outsider_view = "defensive"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["Neutral"]:
+            self.outsider_view = "neutral"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["Receptive"]:
+            self.outsider_view = "receptive"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["Accepting"]:
+            self.outsider_view = "accepting"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["Random"]:
+            self.outsider_view = "random"
+            self.refresh_text_and_buttons()
+            self.outsider_view = self.random_clan_misc()
+        """
+            
+        if event.ui_element == self.elements["normal_age"]:
+            self.made_app_age = "normal_age"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["early_age"]:
+            self.made_app_age = "early_age"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["late_age"]:
+            self.made_app_age = "late_age"
+            self.refresh_text_and_buttons()
+
+        if event.ui_element == self.elements["done_button"]:
+            self.save_clan()
+            self.open_clan_saved_screen()
+
+
 
     def handle_saved_clan_event(self, event):
         if event.ui_element == self.elements["continue"]:
@@ -812,8 +1010,185 @@ class MakeClanScreen(Screens):
                     text_kwargs={"symbol": symbol_name},
                 )
                 self.elements["selected_symbol"].show()
-                self.elements["done_button"].enable()
+                self.elements["next_step"].enable()
+        
+        elif self.sub_screen == "ideology":
+            if self.clan_backstory == "newly_formed":
+                self.elements["newly_formed_group"].disable()
+                self.elements["branching_off_group"].enable()
+                self.elements["rebellious_uprising_group"].enable()
+                self.elements["old_world_group"].enable()
+            elif self.clan_backstory == "branching_off":
+                self.elements["newly_formed_group"].enable()
+                self.elements["branching_off_group"].disable()
+                self.elements["rebellious_uprising_group"].enable()
+                self.elements["old_world_group"].enable()
+            elif self.clan_backstory == "rebellious_uprising":
+                self.elements["newly_formed_group"].enable()
+                self.elements["branching_off_group"].enable()
+                self.elements["rebellious_uprising_group"].disable()
+                self.elements["old_world_group"].enable()
+            elif self.clan_backstory == "old world":
+                self.elements["newly_formed_group"].enable()
+                self.elements["branching_off_group"].enable()
+                self.elements["rebellious_uprising_group"].enable()
+                self.elements["old_world_group"].disable()
+            
+            """
+            if self.clan_age_ideo == "young":
+                self.elements["young_age"].disable()
+                self.elements["budding_age"].enable()
+                self.elements["established_age"].enable()
+                self.elements["seasoned_age"].enable()
+                self.elements["ancient_age"].enable()
+            elif self.clan_age_ideo == "budding":
+                self.elements["young_age"].enable()
+                self.elements["budding_age"].disable()
+                self.elements["established_age"].enable()
+                self.elements["seasoned_age"].enable()
+                self.elements["ancient_age"].enable()
+            elif self.clan_age_ideo == "established":
+                self.elements["young_age"].enable()
+                self.elements["budding_age"].enable()
+                self.elements["established_age"].disable()
+                self.elements["seasoned_age"].enable()
+                self.elements["ancient_age"].enable()
+            elif self.clan_age_ideo == "seasoned":
+                self.elements["young_age"].enable()
+                self.elements["budding_age"].enable()
+                self.elements["established_age"].enable()
+                self.elements["seasoned_age"].disable()
+                self.elements["ancient_age"].enable()
+            elif self.clan_age_ideo == "ancient":
+                self.elements["young_age"].enable()
+                self.elements["budding_age"].enable()
+                self.elements["established_age"].enable()
+                self.elements["seasoned_age"].enable()
+                self.elements["ancient_age"].disable()
 
+            if self.clan_side_ideo == "tiny":
+                self.elements["tiny_size"].disable()
+                self.elements["medium_size"].enable()
+                self.elements["moderate_size"].enable()
+                self.elements["substantial_size"].enable()
+                self.elements["enormous_size"].enable()
+            elif self.clan_side_ideo == "medium":
+                self.elements["tiny_size"].enable()
+                self.elements["medium_size"].disable()
+                self.elements["moderate_size"].enable()
+                self.elements["substantial_size"].enable()
+                self.elements["enormous_size"].enable()
+            elif self.clan_side_ideo == "moderate":
+                self.elements["tiny_size"].enable()
+                self.elements["medium_size"].enable()
+                self.elements["moderate_size"].disable()
+                self.elements["substantial_size"].enable()
+                self.elements["enormous_size"].enable()
+            elif self.clan_side_ideo == "substantial":
+                self.elements["tiny_size"].enable()
+                self.elements["medium_size"].enable()
+                self.elements["moderate_size"].enable()
+                self.elements["substantial_size"].disable()
+                self.elements["enormous_size"].enable()
+            elif self.clan_side_ideo == "enormous":
+                self.elements["tiny_size"].enable()
+                self.elements["medium_size"].enable()
+                self.elements["moderate_size"].enable()
+                self.elements["substantial_size"].enable()
+                self.elements["enormous_size"].disable()
+            """
+            #and self.clan_age_ideo and self.clan_side_ideo: This is so that all options have to be filled with atleast one option before going
+            if self.clan_backstory:
+                self.elements["next_step"].enable()
+            else:
+                self.elements["next_step"].disable()
+    
+
+        elif self.sub_screen == "affiliation":
+            if self.clan_affiliation == "starclan":
+                self.elements["starclan"].disable()
+                self.elements["dark_forest"].enable()
+                self.elements["random_button"].enable()
+                self.elements["next_step"].enable()
+            elif self.clan_affiliation == "darkforest":
+                self.elements["starclan"].enable()
+                self.elements["dark_forest"].disable()
+                self.elements["random_button"].enable()
+                self.elements["next_step"].enable()
+            elif self.clan_affiliation == "random":
+                self.elements["starclan"].enable()
+                self.elements["dark_forest"].enable()
+                self.elements["random_button"].disable()
+                self.elements["next_step"].enable()
+        
+        
+        elif self.sub_screen == "misc":
+            """
+            if self.outsider_view == "antagonistic":
+                self.elements["Antagonistic"].disable()
+                self.elements["Defensive"].enable()
+                self.elements["Neutral"].enable()
+                self.elements["Receptive"].enable()
+                self.elements["Accepting"].enable()
+                self.elements["Random"].enable()
+                self.elements["done_button"].enable()
+            elif self.outsider_view == "defensive":
+                self.elements["Antagonistic"].enable()
+                self.elements["Defensive"].disable()
+                self.elements["Neutral"].enable()
+                self.elements["Receptive"].enable()
+                self.elements["Accepting"].enable()
+                self.elements["Random"].enable()
+                self.elements["done_button"].enable()
+            elif self.outsider_view == "neutral":
+                self.elements["Antagonistic"].enable()
+                self.elements["Defensive"].enable()
+                self.elements["Neutral"].disable()
+                self.elements["Receptive"].enable()
+                self.elements["Accepting"].enable()
+                self.elements["Random"].enable()
+                self.elements["done_button"].enable()
+            elif self.outsider_view == "receptive":
+                self.elements["Antagonistic"].enable()
+                self.elements["Defensive"].enable()
+                self.elements["Neutral"].enable()
+                self.elements["Receptive"].disable()
+                self.elements["Accepting"].enable()
+                self.elements["Random"].enable()
+                self.elements["done_button"].enable()
+            elif self.outsider_view == "accepting":
+                self.elements["Antagonistic"].enable()
+                self.elements["Defensive"].enable()
+                self.elements["Neutral"].enable()
+                self.elements["Receptive"].enable()
+                self.elements["Accepting"].disable()
+                self.elements["Random"].enable()
+                self.elements["done_button"].enable()
+            elif self.outsider_view == "random":
+                self.elements["Antagonistic"].enable()
+                self.elements["Defensive"].enable()
+                self.elements["Neutral"].enable()
+                self.elements["Receptive"].enable()
+                self.elements["Accepting"].enable()
+                self.elements["Random"].disable()
+            """
+                
+            if self.made_app_age == "early_age":
+                self.elements["early_age"].disable()
+                self.elements["normal_age"].enable()
+                self.elements["late_age"].enable()
+            elif self.made_app_age == "normal_age":
+                self.elements["early_age"].enable()
+                self.elements["normal_age"].disable()
+                self.elements["late_age"].enable()
+            elif self.made_app_age == "late_age":
+                self.elements["early_age"].enable()
+                self.elements["normal_age"].enable()
+                self.elements["late_age"].disable()
+
+            if self.made_app_age:
+                self.elements["done_button"].enable()
+        
     def refresh_selected_camp(self):
         """Updates selected camp image and tabs"""
         self.tabs["tab1"].kill()
@@ -1237,7 +1612,6 @@ class MakeClanScreen(Screens):
                 ui_scale(pygame.Rect((x_pos, y_pos), (50, 50))),
                 sprites.sprites[symbol],
                 object_id=f"#{symbol}",
-                starting_height=3,
                 manager=MANAGER,
             )
             self.symbol_buttons[f"{symbol}"] = UIImageButton(
@@ -1275,6 +1649,13 @@ class MakeClanScreen(Screens):
                 ["kitten", "apprentice", "warrior", "warrior", "elder"]
             )
             self.members.append(create_cat(status=random_status))
+        self.clan_backstory = self.random_clan_backstory()
+        self.clan_affiliation = self.random_clan_affiliation()
+
+        """
+        self.outsider_view = self.random_clan_misc()
+        self.clan_age_ideo = self.random_clan_age()
+        """
 
     def random_clan_name(self):
         clan_names = (
@@ -1297,6 +1678,55 @@ class MakeClanScreen(Screens):
             possible_biomes.remove(old_biome)
         chosen_biome = choice(possible_biomes)
         return chosen_biome
+    
+    def random_clan_backstory(self):
+        backstories = [
+            "newly_formed",
+            "branching_off",
+            "rebellious_uprising",
+            "old world",
+        ]
+        return choice(backstories)
+    
+    """
+    def random_clan_age(self):
+        clan_age_ideo = [
+            "young",
+            "budding",
+            "established",
+            "seasoned",
+            "ancient",
+        ]
+        return choice(clan_age_ideo)
+    """
+
+    def random_clan_affiliation(self):
+        affiliation = [
+            "starclan",
+            "dark_forest"
+        ]
+        return choice(affiliation)
+
+    #TO BE IMPLEMENTED: CLAN QUICKSTART
+    """
+    def random_clan_misc(self):
+        outsider_view = [
+            "antagonistic",
+            "defensive",
+            "neutral",
+            "receptive",
+            "accepting"
+        ]
+        return choice(outsider_view)
+    
+    """
+    def random_app_age(self):
+        made_app_age = [
+            "early_age",
+            "normal_age",
+            "late_age"
+        ]
+        return choice(made_app_age)
 
     def _get_cat_tooltip_string(self, cat: Cat):
         """Get tooltip for cat. Tooltip displays name, sex, age group, and trait."""
@@ -1933,16 +2363,16 @@ class MakeClanScreen(Screens):
             manager=MANAGER,
             starting_height=2,
         )
-        self.elements["done_button"] = UISurfaceImageButton(
+        self.elements["next_step"] = UISurfaceImageButton(
             ui_scale(pygame.Rect((0, 645), (147, 30))),
-            "buttons.done",
+            "buttons.next_step",
             get_button_dict(ButtonStyles.MENU_RIGHT, (147, 30)),
             object_id="@buttonstyles_menu_right",
             manager=MANAGER,
             starting_height=2,
             anchors={"left_target": self.elements["previous_step"]},
         )
-        self.elements["done_button"].disable()
+        self.elements["next_step"].disable()
 
         # create screen specific elements
         self.elements["text_container"] = pygame_gui.elements.UIAutoResizingContainer(
@@ -2019,7 +2449,6 @@ class MakeClanScreen(Screens):
             ui_scale(pygame.Rect((540, 90), (169, 166))),
             get_box(BoxStyles.FRAME, (169, 166), sides=(True, True, False, True)),
             object_id="@boxstyles_frame",
-            starting_height=1,
             manager=MANAGER,
         )
 
@@ -2050,7 +2479,6 @@ class MakeClanScreen(Screens):
             ui_scale(pygame.Rect((76, 250), (650, 370))),
             get_box(BoxStyles.ROUNDED_BOX, (650, 370)),
             object_id="#symbol_list_frame",
-            starting_height=2,
             manager=MANAGER,
         )
 
@@ -2078,14 +2506,13 @@ class MakeClanScreen(Screens):
                     ui_scale_dimensions((100, 100)),
                 ).convert_alpha(),
                 object_id="#selected_symbol",
-                starting_height=2,
                 manager=MANAGER,
             )
             self.refresh_symbol_list()
             while self.symbol_selected not in self.symbol_buttons:
                 self.current_page += 1
                 self.refresh_symbol_list()
-            self.elements["done_button"].enable()
+            self.elements["next_step"].enable()
         else:
             self.elements["selected_symbol"] = pygame_gui.elements.UIImage(
                 ui_scale(pygame.Rect((573, 127), (100, 100))),
@@ -2094,11 +2521,299 @@ class MakeClanScreen(Screens):
                     ui_scale_dimensions((100, 100)),
                 ).convert_alpha(),
                 object_id="#selected_symbol",
-                starting_height=2,
                 manager=MANAGER,
                 visible=False,
             )
             self.refresh_symbol_list()
+
+    def open_choose_backstory(self):
+        """Creates the UI elements for choosing the clans backstory and moving between screens"""
+
+        self.clear_all_page()
+        self.sub_screen = "ideology"
+
+        self.elements["newly_formed_group"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 240), (132, 30))),
+            "buttons.newly_formed_group",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["branching_off_group"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 280), (132, 30))),
+            "buttons.branching_off_group",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["rebellious_uprising_group"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 320), (132, 30))),
+            "buttons.rebellious_uprising_group",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["old_world_group"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 360), (132, 30))),
+            "buttons.old_world_group",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        #TO BE IMPLEMENTED
+        """
+        #clan_age stuff that will be implemented later
+        self.elements["young_age"] = UISurfaceImageButton(
+        ui_scale(pygame.Rect((253, 240), (132, 30))),
+        "Young",
+        get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+        object_id="@buttonstyles_rounded_rect",
+        manager=MANAGER,
+        )
+        self.elements["budding_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 280), (132, 30))),
+            "Budding",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["established_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 320), (132, 30))),
+            "Established",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["seasoned_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 360), (132, 30))),
+            "Seasoned",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["ancient_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 400), (132, 30))),
+            "Ancient",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        #clan_side_ideo stuff, which will be used for further updates
+        self.elements["tiny_size"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((397, 240), (132, 30))),
+            "Tiny",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["medium_size"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((397, 280), (132, 30))),
+            "Medium",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["moderate_size"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((397, 320), (132, 30))),
+            "Moderate",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["substantial_size"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((397, 360), (132, 30))),
+            "Substantial",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["enormous_size"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((397, 400), (132, 30))),
+            "Enormous",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        """
+        self.elements["previous_step"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 645), (147, 30))),
+            "buttons.previous_step",
+            get_button_dict(ButtonStyles.MENU_LEFT, (147, 30)),
+            object_id="@buttonstyles_menu_left",
+            manager=MANAGER,
+            starting_height=2,
+        )
+        self.elements["previous_step"].enable()
+        self.elements["next_step"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((0, 645), (147, 30))),
+            "buttons.next_step",
+            get_button_dict(ButtonStyles.MENU_RIGHT, (147, 30)),
+            object_id="@buttonstyles_menu_right",
+            manager=MANAGER,
+            starting_height=2,
+            anchors={"left_target": self.elements["previous_step"]},
+        )
+        self.elements["next_step"].disable()
+
+
+
+
+    def open_choose_affilitaion(self):
+        """Creates the UI elements for selecting clan_affiliation and moving between the other screens"""
+        self.clear_all_page()
+        self.sub_screen = "affiliation"
+
+        self.elements["starclan"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 240), (132, 30))),
+            "buttons.starclan",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["dark_forest"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((94, 320), (162, 34))),
+            "buttons.dark_forest",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["random_button"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((100, 400), (150, 30))),
+            "buttons.random_button",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["previous_step"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 645), (147, 30))),
+            "buttons.previous_step",
+            get_button_dict(ButtonStyles.MENU_LEFT, (147, 30)),
+            object_id="@buttonstyles_menu_left",
+            manager=MANAGER,
+            starting_height=2,
+        )
+        self.elements["previous_step"].enable()
+        self.elements["next_step"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((0, 645), (147, 30))),
+            "buttons.next_step",
+            get_button_dict(ButtonStyles.MENU_RIGHT, (147, 30)),
+            object_id="@buttonstyles_menu_right",
+            manager=MANAGER,
+            starting_height=2,
+            anchors={"left_target": self.elements["previous_step"]},
+        )
+        self.elements["next_step"].disable()
+    
+    
+    def open_choose_misc(self):
+    
+        self.clear_all_page()
+        self.sub_screen = "misc"
+
+        """
+        # Create the outsider view buttons
+        self.elements["Antagonistic"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 240), (132, 30))),
+            "Antagonistic",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["Defensive"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 280), (132, 30))),
+            "Defensive",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["Neutral"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 320), (132, 30))),
+            "Neutral",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["Receptive"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 360), (132, 30))),
+            "Receptive",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["Accepting"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 400), (132, 30))),
+            "Accepting",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["Random"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 440), (132, 30))),
+            "Random",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        """
+
+
+        #made_app_age 
+        self.elements["early_age"] = UISurfaceImageButton(
+        ui_scale(pygame.Rect((253, 240), (132, 30))),
+        "buttons.early_age",
+        get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+        object_id="@buttonstyles_rounded_rect",
+        manager=MANAGER,
+        )
+
+        self.elements["normal_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 280), (132, 30))),
+            "buttons.normal_age",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["late_age"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 320), (132, 30))),
+            "buttons.late_age",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+
+        self.elements["previous_step"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 645), (147, 30))),
+            "buttons.previous_step",
+            get_button_dict(ButtonStyles.MENU_LEFT, (147, 30)),
+            object_id="@buttonstyles_menu_left",
+            manager=MANAGER,
+            starting_height=2,
+        )
+        self.elements["previous_step"].enable()
+
+        self.elements["done_button"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((0, 645), (147, 30))),
+            "buttons.done",
+            get_button_dict(ButtonStyles.MENU_RIGHT, (147, 30)),
+            object_id="@buttonstyles_menu_right",
+            manager=MANAGER,
+            starting_height=2,
+            anchors={"left_target": self.elements["previous_step"]},
+        )
+        self.elements["done_button"].disable()  
+
 
     def open_clan_saved_screen(self):
         self.clear_all_page()
@@ -2113,7 +2828,6 @@ class MakeClanScreen(Screens):
                 ui_scale_dimensions((100, 100)),
             ).convert_alpha(),
             object_id="#selected_symbol",
-            starting_height=1,
             manager=MANAGER,
         )
 
@@ -2122,7 +2836,6 @@ class MakeClanScreen(Screens):
             pygame.transform.scale(
                 game.clan.leader.sprite, ui_scale_dimensions((100, 100))
             ),
-            starting_height=1,
             manager=MANAGER,
         )
         self.elements["continue"] = UISurfaceImageButton(
@@ -2161,6 +2874,12 @@ class MakeClanScreen(Screens):
             game_mode=self.game_mode,
             starting_members=self.members,
             starting_season=self.selected_season,
+            clan_backstory = self.clan_backstory,
+            clan_affiliation= self.clan_affiliation,
+            #clan_size_ideo = self.clan_size_ideo,
+            #outsider_view = self.outsider_view,
+            made_app_age = self.made_app_age,
+            #clan_age_ideo = self.clan_age_ideo,
         )
         game.clan.create_clan()
         # game.clan.starclan_cats.clear()
@@ -2197,7 +2916,6 @@ class MakeClanScreen(Screens):
             ui_scale(pygame.Rect(((0, 20), (466, 416)))),
             get_box(BoxStyles.FRAME, (466, 416)),
             manager=MANAGER,
-            starting_height=2,
             anchors={"center": "center"},
         )
 
