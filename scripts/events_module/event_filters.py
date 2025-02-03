@@ -8,6 +8,7 @@ from scripts.utility import (
     filter_relationship_type,
 )
 
+
 def event_for_location(locations: list) -> bool:
     """
     checks if the clan is within the given locations
@@ -102,6 +103,17 @@ def event_for_tags(tags: list, cat, other_cat=None) -> bool:
             return False
 
     if other_cat and "romantic" in tags and not other_cat.is_potential_mate(cat):
+        return False
+
+    # Backstory Specific Tags
+    clan_backstory = game.clan.clan_backstory
+    if "rebellious_uprising" in tags and clan_backstory != "rebellious_uprising":
+        return False
+    if "branching_off" in tags and clan_backstory != "branching_off":
+        return False
+    if "newly_formed" in tags and clan_backstory != "newly_formed":
+        return False
+    if "old_world" in tags and clan_backstory != "old_world":
         return False
 
     return True
