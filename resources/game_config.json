@@ -229,6 +229,13 @@
 	"lost_cat": {
 		"rejoin_chance": 20
 	},
+	"made_apprentice_age": {
+        "ages": {
+            "early": 4,
+			"normal": 6,
+            "late": 8
+        }
+    },
 	"cat_ages": {
 		"newborn": [0, 0],
 		"kitten": [1, 5],
