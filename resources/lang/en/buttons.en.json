@@ -35,8 +35,8 @@
         "branching_off_group": "Branching Off",
         "rebellious_uprising_group": "Rebellious Uprising",
         "old_world_group": "Old World",
-        "early_age": "Early",
-        "normal_age": "Normal",
-        "late_age": "Late"
+        "early_age": "Early Apprenticeship",
+        "normal_age": "Normal Apprenticeship",
+        "late_age": "Late Apprenticeship"
     }
 }
