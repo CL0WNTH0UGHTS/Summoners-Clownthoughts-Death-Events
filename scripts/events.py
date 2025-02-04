@@ -1267,8 +1267,6 @@ class Events:
                 if game.clan and game.clan.made_app_age == "late_age":
                     if cat.moons == game.config["made_apprentice_age"]["ages"]["late"]:
                         self.handle_checking_app(cat)
-                else:
-                    self.handle_checking_app(cat)
                         
             # graduate
             if cat.status in [
