@@ -307,7 +307,7 @@ class MakeClanScreen(Screens):
             self.open_choose_affilitaion()
         elif event.ui_element == self.elements["previous_step"]:
             self.clan_name = ""
-            self.open_choose_affilitaion()
+            self.open_game_mode()
 
     def handle_name_clan_key(self, event):
         if event.key == pygame.K_ESCAPE:
@@ -377,11 +377,12 @@ class MakeClanScreen(Screens):
             self.clan_affiliation = "starclan"
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["dark_forest"]:
-            self.clan_affiliation = "darkforest"
+            self.clan_affiliation = "dark_forest"
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["random_button"]:
             self.clan_affiliation = "random"
             self.refresh_text_and_buttons()
+            self.clan_affiliation = self.random_clan_affiliation()
         elif event.ui_element == self.elements["next_step"]:
             self.open_choose_leader()
     
@@ -426,7 +427,7 @@ class MakeClanScreen(Screens):
             self.open_choose_deputy()
         elif event.ui_element == self.elements["previous_step"]:
             self.clan_name = ""
-            self.open_name_clan()
+            self.open_choose_affilitaion()
 
     def handle_choose_deputy_event(self, event):
         if event.ui_element == self.elements["previous_step"]:
@@ -534,8 +535,12 @@ class MakeClanScreen(Screens):
             self.clan_backstory = "rebellious_uprising"
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["old_world_group"]:
-            self.clan_backstory = "old world"
+            self.clan_backstory = "old_world"
             self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["random_button"]:
+            self.clan_backstory = "random"
+            self.refresh_text_and_buttons()
+            self.clan_backstory = self.random_clan_backstory()
 
 
         """
@@ -712,6 +717,24 @@ class MakeClanScreen(Screens):
             #self.outsider_view = ""
             self.made_app_age = ""
             self.open_choose_symbol()
+            
+        elif event.ui_element == self.elements["normal_age"]:
+            self.made_app_age = "normal_age"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["early_age"]:
+            self.made_app_age = "early_age"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["late_age"]:
+            self.made_app_age = "late_age"
+            self.refresh_text_and_buttons()
+        elif event.ui_element == self.elements["random_button"]:
+            self.made_app_age = "random"
+            self.refresh_text_and_buttons()
+            self.made_app_age = self.random_app_age()
+
+        elif event.ui_element == self.elements["done_button"]:
+            self.save_clan()
+            self.open_clan_saved_screen()
 
         """
         elif event.ui_element == self.elements["Antagonistic"]:
@@ -729,26 +752,11 @@ class MakeClanScreen(Screens):
         elif event.ui_element == self.elements["Accepting"]:
             self.outsider_view = "accepting"
             self.refresh_text_and_buttons()
-        elif event.ui_element == self.elements["Random"]:
+        elif event.ui_element == self.elements["random_button"]:
             self.outsider_view = "random"
             self.refresh_text_and_buttons()
             self.outsider_view = self.random_clan_misc()
         """
-            
-        if event.ui_element == self.elements["normal_age"]:
-            self.made_app_age = "normal_age"
-            self.refresh_text_and_buttons()
-        elif event.ui_element == self.elements["early_age"]:
-            self.made_app_age = "early_age"
-            self.refresh_text_and_buttons()
-        elif event.ui_element == self.elements["late_age"]:
-            self.made_app_age = "late_age"
-            self.refresh_text_and_buttons()
-
-        if event.ui_element == self.elements["done_button"]:
-            self.save_clan()
-            self.open_clan_saved_screen()
-
 
 
     def handle_saved_clan_event(self, event):
@@ -1015,21 +1023,31 @@ class MakeClanScreen(Screens):
                 self.elements["branching_off_group"].enable()
                 self.elements["rebellious_uprising_group"].enable()
                 self.elements["old_world_group"].enable()
+                self.elements["random_button"].enable()
             elif self.clan_backstory == "branching_off":
                 self.elements["newly_formed_group"].enable()
                 self.elements["branching_off_group"].disable()
                 self.elements["rebellious_uprising_group"].enable()
                 self.elements["old_world_group"].enable()
+                self.elements["random_button"].enable()
             elif self.clan_backstory == "rebellious_uprising":
                 self.elements["newly_formed_group"].enable()
                 self.elements["branching_off_group"].enable()
                 self.elements["rebellious_uprising_group"].disable()
                 self.elements["old_world_group"].enable()
-            elif self.clan_backstory == "old world":
+                self.elements["random_button"].enable()
+            elif self.clan_backstory == "old_world":
                 self.elements["newly_formed_group"].enable()
                 self.elements["branching_off_group"].enable()
                 self.elements["rebellious_uprising_group"].enable()
                 self.elements["old_world_group"].disable()
+                self.elements["random_button"].enable()
+            elif self.clan_backstory == "random":
+                self.elements["newly_formed_group"].enable()
+                self.elements["branching_off_group"].enable()
+                self.elements["rebellious_uprising_group"].enable()
+                self.elements["old_world_group"].enable()
+                self.elements["random_button"].disable()
             
             """
             if self.clan_age_ideo == "young":
@@ -1106,17 +1124,19 @@ class MakeClanScreen(Screens):
                 self.elements["starclan"].disable()
                 self.elements["dark_forest"].enable()
                 self.elements["random_button"].enable()
-                self.elements["next_step"].enable()
-            elif self.clan_affiliation == "darkforest":
+            elif self.clan_affiliation == "dark_forest":
                 self.elements["starclan"].enable()
                 self.elements["dark_forest"].disable()
                 self.elements["random_button"].enable()
-                self.elements["next_step"].enable()
             elif self.clan_affiliation == "random":
                 self.elements["starclan"].enable()
                 self.elements["dark_forest"].enable()
                 self.elements["random_button"].disable()
+
+            if self.clan_affiliation:
                 self.elements["next_step"].enable()
+            else:
+                self.elements["next_step"].disable()
         
         
         elif self.sub_screen == "misc":
@@ -1127,7 +1147,7 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].enable()
                 self.elements["Receptive"].enable()
                 self.elements["Accepting"].enable()
-                self.elements["Random"].enable()
+                self.elements["random_button"].enable()
                 self.elements["done_button"].enable()
             elif self.outsider_view == "defensive":
                 self.elements["Antagonistic"].enable()
@@ -1135,7 +1155,7 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].enable()
                 self.elements["Receptive"].enable()
                 self.elements["Accepting"].enable()
-                self.elements["Random"].enable()
+                self.elements["random_button"].enable()
                 self.elements["done_button"].enable()
             elif self.outsider_view == "neutral":
                 self.elements["Antagonistic"].enable()
@@ -1143,7 +1163,7 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].disable()
                 self.elements["Receptive"].enable()
                 self.elements["Accepting"].enable()
-                self.elements["Random"].enable()
+                self.elements["random_button"].enable()
                 self.elements["done_button"].enable()
             elif self.outsider_view == "receptive":
                 self.elements["Antagonistic"].enable()
@@ -1151,7 +1171,7 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].enable()
                 self.elements["Receptive"].disable()
                 self.elements["Accepting"].enable()
-                self.elements["Random"].enable()
+                self.elements["random_button"].enable()
                 self.elements["done_button"].enable()
             elif self.outsider_view == "accepting":
                 self.elements["Antagonistic"].enable()
@@ -1159,7 +1179,7 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].enable()
                 self.elements["Receptive"].enable()
                 self.elements["Accepting"].disable()
-                self.elements["Random"].enable()
+                self.elements["random_button"].enable()
                 self.elements["done_button"].enable()
             elif self.outsider_view == "random":
                 self.elements["Antagonistic"].enable()
@@ -1167,21 +1187,29 @@ class MakeClanScreen(Screens):
                 self.elements["Neutral"].enable()
                 self.elements["Receptive"].enable()
                 self.elements["Accepting"].enable()
-                self.elements["Random"].disable()
+                self.elements["random_button"].disable()
             """
                 
             if self.made_app_age == "early_age":
                 self.elements["early_age"].disable()
                 self.elements["normal_age"].enable()
                 self.elements["late_age"].enable()
+                self.elements["random_button"].enable()
             elif self.made_app_age == "normal_age":
                 self.elements["early_age"].enable()
                 self.elements["normal_age"].disable()
                 self.elements["late_age"].enable()
+                self.elements["random_button"].enable()
             elif self.made_app_age == "late_age":
                 self.elements["early_age"].enable()
                 self.elements["normal_age"].enable()
                 self.elements["late_age"].disable()
+                self.elements["random_button"].enable()
+            elif self.made_app_age == "random":
+                self.elements["early_age"].enable()
+                self.elements["normal_age"].enable()
+                self.elements["late_age"].enable()
+                self.elements["random_button"].disable()
 
             if self.made_app_age:
                 self.elements["done_button"].enable()
@@ -1681,7 +1709,7 @@ class MakeClanScreen(Screens):
             "newly_formed",
             "branching_off",
             "rebellious_uprising",
-            "old world",
+            "old_world",
         ]
         return choice(backstories)
     
@@ -2557,6 +2585,13 @@ class MakeClanScreen(Screens):
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
+        self.elements["random_button"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((109, 400), (132, 30))),
+            "buttons.random_button",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
 
         #TO BE IMPLEMENTED
         """
@@ -2755,9 +2790,9 @@ class MakeClanScreen(Screens):
             manager=MANAGER,
         )
 
-        self.elements["Random"] = UISurfaceImageButton(
+        self.elements["random_button"] = UISurfaceImageButton(
             ui_scale(pygame.Rect((109, 440), (132, 30))),
-            "Random",
+            "buttons.random_button",
             get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
@@ -2785,6 +2820,13 @@ class MakeClanScreen(Screens):
         self.elements["late_age"] = UISurfaceImageButton(
             ui_scale(pygame.Rect((253, 320), (132, 30))),
             "buttons.late_age",
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            object_id="@buttonstyles_rounded_rect",
+            manager=MANAGER,
+        )
+        self.elements["random_button"] = UISurfaceImageButton(
+            ui_scale(pygame.Rect((253, 360), (132, 30))),
+            "buttons.random_button",
             get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
