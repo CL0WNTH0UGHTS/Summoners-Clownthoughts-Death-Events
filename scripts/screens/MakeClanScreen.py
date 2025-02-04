@@ -375,15 +375,12 @@ class MakeClanScreen(Screens):
             self.open_name_clan()
         elif event.ui_element == self.elements["starclan"]:
             self.clan_affiliation = "starclan"
-            self.elements["next_step"].enable()
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["dark_forest"]:
             self.clan_affiliation = "darkforest"
-            self.elements["next_step"].enable()
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["random_button"]:
             self.clan_affiliation = "random"
-            self.elements["next_step"].enable()
             self.refresh_text_and_buttons()
         elif event.ui_element == self.elements["next_step"]:
             self.open_choose_leader()
