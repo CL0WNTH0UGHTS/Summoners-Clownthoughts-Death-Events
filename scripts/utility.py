@@ -2088,6 +2088,23 @@ def ongoing_event_text_adjust(Cat, text, clan=None, other_clan_name=None):
 
     return text
 
+def update_clan_affiliation(clan, return_string=False):
+    """
+    Updates the clan_affiliation based on the current status of the instructor: Used whilst transfering saves
+    If the instructor is in StarClan, set clan_affiliation to 'starclan'.
+    If the instructor is in the Dark Forest, set clan_affiliation to 'dark_forest'.
+    
+    :param clan: The clan object
+    :param return_string: If True, returns the affiliation as a string; otherwise, returns the updated value.
+    :return: The updated clan_affiliation or a string representation if return_string is True.
+    """
+    if clan.instructor.ID in clan.starclan_cats:
+        clan.clan_affiliation = "starclan"
+    elif clan.instructor.ID in clan.darkforest_cats:
+        clan.clan_affiliation = "dark_forest"
+
+    if return_string:
+        return clan.clan_affiliation
 
 def event_text_adjust(
         Cat: Type["Cat"],
@@ -2589,6 +2606,8 @@ def update_sprite(cat):
     cat.sprite = generate_sprite(cat)
     # update class dictionary
     cat.all_cats[cat.ID] = cat
+
+
 
 
 def clan_symbol_sprite(clan, return_string=False, force_light=False):

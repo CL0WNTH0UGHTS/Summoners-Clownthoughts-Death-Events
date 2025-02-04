@@ -31,6 +31,7 @@ from scripts.utility import (
     get_current_season,
     quit,
     clan_symbol_sprite, get_living_clan_cat_count,
+    update_clan_affiliation
 )  # pylint: disable=redefined-builtin
 
 
@@ -263,14 +264,15 @@ class Clan:
 
         if self.clan_backstory == "newly_formed":
             self.instructor.dead_for = randint(5,20)
-        else:    
+        else:
             self.instructor.dead_for = randint(20, 200)
 
         self.add_cat(self.instructor)
         self.add_to_starclan(self.instructor)
         if self.clan_affiliation == "dark_forest":
             self.instructor.df = True
-
+        else:
+            self.instructor.df = False
         self.all_clans = []
 
         key_copy = tuple(Cat.all_cats.keys())
@@ -294,11 +296,7 @@ class Clan:
         # give thoughts,actions and relationships to cats
         for cat_id in Cat.all_cats:
             Cat.all_cats.get(cat_id).init_all_relationships()
-
-            if self.clan_backstory == "old_world":
-                Cat.all_cats.get(cat_id).backstory = "clanborn"
-            else:
-                Cat.all_cats.get(cat_id).backstory = "clan_founder"
+            Cat.all_cats.get(cat_id).backstory = "clan_founder"
             if Cat.all_cats.get(cat_id).status == "apprentice":
                 Cat.all_cats.get(cat_id).status_change("apprentice")
             Cat.all_cats.get(cat_id).thoughts()
@@ -314,7 +312,7 @@ class Clan:
                 other_clan_name = choice(
                     names.names_dict["normal_prefixes"]
                     + names.names_dict["clan_prefixes"]
-                )            
+                )           
             other_clan = OtherClan(name=other_clan_name)
             self.all_clans.append(other_clan)
             
@@ -540,7 +538,7 @@ class Clan:
             "gamemode": self.game_mode,
             "last_focus_change": self.last_focus_change,
             "clans_in_focus": self.clans_in_focus,
-            "instructor": self.instructor.ID,
+            "instructor": self.instructor.ID if self.instructor else None,
             "reputation": self.reputation,
             "mediated": game.mediated,
             "starting_season": self.starting_season,
@@ -550,7 +548,7 @@ class Clan:
             "source_build": get_version_info().is_source_build,
             "custom_pronouns": self.custom_pronouns,
             "clan_backstory": self.clan_backstory,
-            "clan_affiliation": self.clan_affiliation,
+            "clan_affiliation": self.clan_affiliation
         }
 
         # LEADER DATA
@@ -590,6 +588,9 @@ class Clan:
         clan_data["other_clans"] = [vars(i) for i in self.all_clans]
 
         clan_data["war"] = self.war
+
+        clan_data["clan_backstory"] = self.clan_backstory
+        clan_data["clan_affiliation"] = self.clan_affiliation
 
         self.save_herb_supply(game.clan)
         self.save_disaster(game.clan)
@@ -867,12 +868,6 @@ class Clan:
             med_cat = Cat.all_cats[clan_data["med_cat"]]
         else:
             med_cat = None
-        
-        # So that new updates wont crash hopefully?
-        if "clan_backstory" not in clan_data:
-            clan_data["clan_backstory"] = "newly_formed"
-        if "clan_affiliation" not in clan_data:
-            clan_data["clan_affiliation"] = "starclan"
 
         game.clan = Clan(
             name=clan_data["clanname"],
@@ -885,10 +880,6 @@ class Clan:
             self_run_init_functions=False,
         )
         game.clan.post_initialization_functions()
-
-        game.clan.clan_backstory = clan_data["clan_backstory"]
-        game.clan.clan_affiliation = clan_data["clan_affiliation"]
-
 
         game.clan.reputation = int(clan_data["reputation"])
 
@@ -906,6 +897,16 @@ class Clan:
         game.clan.deputy_predecessors = clan_data["deputy_predecessors"]
         game.clan.med_cat_predecessors = clan_data["med_cat_predecessors"]
         game.clan.med_cat_number = clan_data["med_cat_number"]
+
+        if "clan_backstory" in clan_data:
+            game.clan.clan_backstory = clan_data["clan_backstory"]
+        else:
+            game.clan.clan_backstory = "newly_formed"
+        
+        if "clan_affiliation" in clan_data:
+            game.clan.clan_affiliation=clan_data["clan_affiliation"]
+        else:
+            game.clan.clan_affiliation = update_clan_affiliation(game.clan, return_string=True)
 
         if "other_clans" in clan_data:
                 for other_clan in clan_data["other_clans"]:
