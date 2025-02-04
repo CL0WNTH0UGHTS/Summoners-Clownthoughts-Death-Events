@@ -821,6 +821,10 @@ class Clan:
         # assigning a symbol, since this save would be too old to have a chosen symbol
         game.clan.chosen_symbol = clan_symbol_sprite(game.clan, return_string=True)
 
+        # assigning both affil and backstory as the save would predate this
+        game.clan.clan_affiliation = "starclan"
+        game.clan.clan_backstory = "newly_founded"
+
         game.switches["error_message"] = ""
 
     def load_clan_json(self):
