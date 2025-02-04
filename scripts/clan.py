@@ -104,7 +104,7 @@ class Clan:
         clan_backstory= "newly_formed",
         clan_affiliation = "starclan",
         #outsider_view = "",
-        made_app_age = "normal",
+        made_app_age = "normal_age",
         #clan_size_ideo = "",
         #clan_age_ideo = "",
         self_run_init_functions=True,
