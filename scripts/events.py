@@ -1256,18 +1256,19 @@ class Events:
                     self.ceremony(cat, "elder")
                     
             # MADE APP CEREMONY ---------------------------------------
-            if cat.status == "kitten":
+            if cat.age == "kitten":
                 if game.clan and game.clan.made_app_age == "early_age":
                     if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
                         self.handle_checking_app(cat)
-                        
                 elif game.clan and game.clan.made_app_age == "normal_age":
-                    if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
+                    if cat.moons == game.config["made_apprentice_age"]["ages"]["normal"]:
                         self.handle_checking_app(cat)
-                        
-                elif game.clan and game.clan.made_app_age == "late_age":
-                    if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
+            elif cat.age == "adolescent":
+                if game.clan and game.clan.made_app_age == "late_age":
+                    if cat.moons == game.config["made_apprentice_age"]["ages"]["late"]:
                         self.handle_checking_app(cat)
+                else:
+                    self.handle_checking_app(cat)
                         
             # graduate
             if cat.status in [
