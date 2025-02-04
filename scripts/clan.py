@@ -300,7 +300,7 @@ class Clan:
             Cat.all_cats.get(cat_id).init_all_relationships()
 
             if self.clan_backstory == "old_world":
-                Cat.all_cats.get(cat_id).backstory = "clan_born"
+                Cat.all_cats.get(cat_id).backstory = "clanborn"
             else:
                 Cat.all_cats.get(cat_id).backstory = "clan_founder"
             if Cat.all_cats.get(cat_id).status == "apprentice":
