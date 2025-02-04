@@ -260,9 +260,17 @@ class Clan:
             ),
         )
         self.instructor.dead = True
-        self.instructor.dead_for = randint(20, 200)
+
+        if self.clan_backstory == "newly_formed":
+            self.instructor.dead_for = randint(5,20)
+        else:    
+            self.instructor.dead_for = randint(20, 200)
+
+
+
+
         self.add_cat(self.instructor)
-        if self.clan_affiliation == "darkforest":
+        if self.clan_affiliation == "dark_forest":
             self.instructor.df = True
             self.add_to_darkforest(self.instructor)
         else:
@@ -290,7 +298,11 @@ class Clan:
         # give thoughts,actions and relationships to cats
         for cat_id in Cat.all_cats:
             Cat.all_cats.get(cat_id).init_all_relationships()
-            Cat.all_cats.get(cat_id).backstory = "clan_founder"
+
+            if self.clan_backstory == "old_world":
+                Cat.all_cats.get(cat_id).backstory = "clan_born"
+            else:
+                Cat.all_cats.get(cat_id).backstory = "clan_founder"
             if Cat.all_cats.get(cat_id).status == "apprentice":
                 Cat.all_cats.get(cat_id).status_change("apprentice")
             Cat.all_cats.get(cat_id).thoughts()
@@ -310,11 +322,12 @@ class Clan:
             other_clan = OtherClan(name=other_clan_name)
             self.all_clans.append(other_clan)
             
+        #reminder to find a way to implement this in leader den events once everything gets ironed out
         if self.clan_backstory == "newly_formed":
             for clan in self.all_clans:
                 clan.relations = max(0, clan.relations - 3)
         elif self.clan_backstory == "rebellious_uprising" and self.all_clans:
-            target_clan = choice(self.all_clans) 
+            target_clan = choice(self.all_clans)
             target_clan.relations = max(0, target_clan.relations - 6)
         elif self.clan_backstory == "branching_off" and self.all_clans:
             target_clan = choice(self.all_clans)
