@@ -266,15 +266,11 @@ class Clan:
         else:    
             self.instructor.dead_for = randint(20, 200)
 
-
-
-
         self.add_cat(self.instructor)
+        self.add_to_starclan(self.instructor)
         if self.clan_affiliation == "dark_forest":
             self.instructor.df = True
-            self.add_to_darkforest(self.instructor)
-        else:
-            self.add_to_starclan(self.instructor)
+
         self.all_clans = []
 
         key_copy = tuple(Cat.all_cats.keys())
@@ -867,6 +863,12 @@ class Clan:
             med_cat = Cat.all_cats[clan_data["med_cat"]]
         else:
             med_cat = None
+        
+        # So that new updates wont crash hopefully?
+        if "clan_backstory" not in clan_data:
+            clan_data["clan_backstory"] = "newly_formed"
+        if "clan_affiliation" not in clan_data:
+            clan_data["clan_affiliation"] = "starclan"
 
         game.clan = Clan(
             name=clan_data["clanname"],
@@ -879,6 +881,10 @@ class Clan:
             self_run_init_functions=False,
         )
         game.clan.post_initialization_functions()
+
+        game.clan.clan_backstory = clan_data["clan_backstory"]
+        game.clan.clan_affiliation = clan_data["clan_affiliation"]
+
 
         game.clan.reputation = int(clan_data["reputation"])
 
