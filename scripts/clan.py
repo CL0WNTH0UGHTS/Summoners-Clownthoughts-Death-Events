@@ -538,7 +538,7 @@ class Clan:
             "gamemode": self.game_mode,
             "last_focus_change": self.last_focus_change,
             "clans_in_focus": self.clans_in_focus,
-            "instructor": self.instructor.ID if self.instructor else None,
+            "instructor": self.instructor.ID,
             "reputation": self.reputation,
             "mediated": game.mediated,
             "starting_season": self.starting_season,
