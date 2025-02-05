@@ -1256,18 +1256,31 @@ class Events:
                     self.ceremony(cat, "elder")
                     
             # MADE APP CEREMONY ---------------------------------------
-            if cat.age == "kitten":
-                if game.clan and game.clan.made_app_age == "early_age":
-                    if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
-                        self.handle_checking_app(cat)
-                elif game.clan and game.clan.made_app_age == "normal_age":
-                    if cat.moons == game.config["made_apprentice_age"]["ages"]["normal"]:
-                        self.handle_checking_app(cat)
-            elif cat.age == "adolescent":
-                if game.clan and game.clan.made_app_age == "late_age":
-                    if cat.moons == game.config["made_apprentice_age"]["ages"]["late"]:
-                        self.handle_checking_app(cat)
-                        
+            # A bit unruly however early_age needs two checks, for kits on clan
+            # creation who are 4 moons and who are 5 moons. Without them, they would
+            # stay apprentices forever.
+            if game.clan and game.clan.made_app_age == "early_age":
+                if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
+                    self.handle_checking_app(cat)
+                elif (
+                    cat.status == "kitten" 
+                    and cat.moons >= game.config["made_apprentice_age"]["ages"]["early"]
+                    and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"] #for cats who were 4 moons on init
+                ):
+                    self.handle_checking_app(cat)
+                elif (
+                    cat.moons == 6 #Should make an enum, sorry jygnn: for cats who were 5 moons on init
+                    and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"]
+                ):
+                    self.handle_checking_app(cat)
+            elif game.clan and game.clan.made_app_age == "normal_age":
+                if cat.moons == game.config["made_apprentice_age"]["ages"]["normal"]:
+                    self.handle_checking_app(cat)
+            
+            elif game.clan and game.clan.made_app_age == "late_age":
+                if cat.moons == game.config["made_apprentice_age"]["ages"]["late"]:
+                    self.handle_checking_app(cat)
+           
             # graduate
             if cat.status in [
                 "apprentice",
