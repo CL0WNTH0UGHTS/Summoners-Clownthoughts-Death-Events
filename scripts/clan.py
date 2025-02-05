@@ -897,6 +897,29 @@ class Clan:
         game.clan.deputy_predecessors = clan_data["deputy_predecessors"]
         game.clan.med_cat_predecessors = clan_data["med_cat_predecessors"]
         game.clan.med_cat_number = clan_data["med_cat_number"]
+        #Allows for the custom pronouns to show up in the add pronoun list after the game has closed and reopened.
+        if "custom_pronouns" in clan_data.keys():
+            if clan_data["custom_pronouns"]:
+                if isinstance(clan_data["custom_pronouns"], list):
+                    # english-only pronouns from an old version
+                    game.clan.custom_pronouns["en"] = clan_data["custom_pronouns"]
+                else:
+                    game.clan.custom_pronouns = clan_data["custom_pronouns"]
+
+        # Instructor Info
+        if clan_data["instructor"] in Cat.all_cats:
+            game.clan.instructor = Cat.all_cats[clan_data["instructor"]]
+            game.clan.add_cat(game.clan.instructor)
+        else:
+            game.clan.instructor = Cat(status=choice(["warrior", "warrior", "elder"]))
+            # update_sprite(game.clan.instructor)
+            game.clan.instructor.dead = True
+            game.clan.add_cat(game.clan.instructor)
+
+        if "clan_symbol" in clan_data:
+            game.clan.chosen_symbol = clan_data["clan_symbol"]
+        else:
+            game.clan.chosen_symbol = clan_symbol_sprite(game.clan, return_string=True)
 
         if "clan_backstory" in clan_data:
             game.clan.clan_backstory = clan_data["clan_backstory"]
