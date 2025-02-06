@@ -102,10 +102,10 @@ class Clan:
         game_mode="classic",
         starting_members=[],
         starting_season="Newleaf",
-        clan_backstory= "newly_formed",
-        clan_affiliation = "starclan",
+        clan_backstory= "",
+        clan_affiliation = "",
         #outsider_view = "",
-        made_app_age = "normal_age",
+        made_app_age = "",
         #clan_size_ideo = "",
         #clan_age_ideo = "",
         self_run_init_functions=True,
@@ -548,7 +548,8 @@ class Clan:
             "source_build": get_version_info().is_source_build,
             "custom_pronouns": self.custom_pronouns,
             "clan_backstory": self.clan_backstory,
-            "clan_affiliation": self.clan_affiliation
+            "clan_affiliation": self.clan_affiliation,
+            "made_app_age": self.made_app_age,
         }
 
         # LEADER DATA
@@ -591,6 +592,7 @@ class Clan:
 
         clan_data["clan_backstory"] = self.clan_backstory
         clan_data["clan_affiliation"] = self.clan_affiliation
+        clan_data["made_app_age"] = self.made_app_age
 
         self.save_herb_supply(game.clan)
         self.save_disaster(game.clan)
@@ -822,9 +824,10 @@ class Clan:
         # assigning a symbol, since this save would be too old to have a chosen symbol
         game.clan.chosen_symbol = clan_symbol_sprite(game.clan, return_string=True)
 
-        # assigning both affil and backstory as the save would predate this
+        # assigning ideology as the save would predate this
         game.clan.clan_affiliation = "starclan"
         game.clan.clan_backstory = "newly_founded"
+        game.clan.made_app_age = "normal_age"
 
         game.switches["error_message"] = ""
 
@@ -930,6 +933,11 @@ class Clan:
             game.clan.clan_affiliation=clan_data["clan_affiliation"]
         else:
             game.clan.clan_affiliation = update_clan_affiliation(game.clan, return_string=True)
+        
+        if "made_app_age" in clan_data:
+            game.clan.made_app_age = clan_data["made_app_age"]
+        else:
+            game.clan.made_app_age = "normal_age"
 
         if "other_clans" in clan_data:
                 for other_clan in clan_data["other_clans"]:
