@@ -1676,6 +1676,7 @@ class MakeClanScreen(Screens):
             self.members.append(create_cat(status=random_status))
         self.clan_backstory = self.random_clan_backstory()
         self.clan_affiliation = self.random_clan_affiliation()
+        self.made_app_age = self.random_app_age()
 
         """
         self.outsider_view = self.random_clan_misc()
@@ -2558,37 +2559,37 @@ class MakeClanScreen(Screens):
         self.sub_screen = "ideology"
 
         self.elements["newly_formed_group"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((109, 240), (132, 30))),
+            ui_scale(pygame.Rect((109, 240), (150, 30))),
             "buttons.newly_formed_group",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (150, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
         self.elements["branching_off_group"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((109, 280), (132, 30))),
+            ui_scale(pygame.Rect((109, 280), (150, 30))),
             "buttons.branching_off_group",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (150, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
         self.elements["rebellious_uprising_group"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((109, 320), (132, 30))),
+            ui_scale(pygame.Rect((109, 320), (150, 30))),
             "buttons.rebellious_uprising_group",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (150, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
         self.elements["old_world_group"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((109, 360), (132, 30))),
+            ui_scale(pygame.Rect((109, 360), (150, 30))),
             "buttons.old_world_group",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (150, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
         self.elements["random_button"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((109, 400), (132, 30))),
+            ui_scale(pygame.Rect((109, 400), (150, 30))),
             "buttons.random_button",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (150, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
@@ -2802,32 +2803,32 @@ class MakeClanScreen(Screens):
 
         #made_app_age 
         self.elements["early_age"] = UISurfaceImageButton(
-        ui_scale(pygame.Rect((253, 240), (132, 30))),
+        ui_scale(pygame.Rect((253, 240), (200, 30))),
         "buttons.early_age",
-        get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+        get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 30)),
         object_id="@buttonstyles_rounded_rect",
         manager=MANAGER,
         )
 
         self.elements["normal_age"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((253, 280), (132, 30))),
+            ui_scale(pygame.Rect((253, 280), (200, 30))),
             "buttons.normal_age",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
 
         self.elements["late_age"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((253, 320), (132, 30))),
+            ui_scale(pygame.Rect((253, 320), (200, 30))),
             "buttons.late_age",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
         self.elements["random_button"] = UISurfaceImageButton(
-            ui_scale(pygame.Rect((253, 360), (132, 30))),
+            ui_scale(pygame.Rect((253, 360), (200, 30))),
             "buttons.random_button",
-            get_button_dict(ButtonStyles.ROUNDED_RECT, (132, 30)),
+            get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 30)),
             object_id="@buttonstyles_rounded_rect",
             manager=MANAGER,
         )
