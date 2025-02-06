@@ -182,56 +182,108 @@ class Events:
                 ghost_names.append(str(ghost.name))
             insert = adjust_list_text(ghost_names)
 
-            if len(Cat.dead_cats) > 1:
-                event = i18n.t(
-                    "hardcoded.event_deaths", count=len(Cat.dead_cats), insert=insert
-                )
-
-                if len(ghost_names) > 2:
-                    alive_cats = list(
-                        filter(
-                            lambda kitty: (
-                                kitty.status != "leader"
-                                and not kitty.dead
-                                and not kitty.outside
-                                and not kitty.exiled
-                            ),
-                            Cat.all_cats.values(),
-                        )
-                    )
-                    # finds a percentage of the living Clan to become shaken
-
-                    if len(alive_cats) == 0:
-                        return
-                    else:
-                        shaken_cats = random.sample(
-                            alive_cats,
-                            k=max(
-                                int((len(alive_cats) * random.randint(4, 6)) / 100),
-                                1,
-                            ),
-                        )
-
-                    shaken_cat_names = []
-                    for cat in shaken_cats:
-                        shaken_cat_names.append(str(cat.name))
-                        cat.get_injured(
-                            "shock",
-                            event_triggered=False,
-                            lethal=False,
-                            severity="minor",
-                        )
-
-                    insert = adjust_list_text(shaken_cat_names)
-
-                    extra_event = i18n.t(
-                        "hardcoded.event_shaken_grief",
-                        count=len(shaken_cat_names),
-                        insert=insert,
+            if(game.clan.instructor.df is False):
+                if len(Cat.dead_cats) > 1:
+                    event = i18n.t(
+                        "hardcoded.event_deaths", count=len(Cat.dead_cats), insert=insert
                     )
 
-            else:
-                event = i18n.t("hardcoded.event_deaths", count=1)
+                    if len(ghost_names) > 2:
+                        alive_cats = list(
+                            filter(
+                                lambda kitty: (
+                                    kitty.status != "leader"
+                                    and not kitty.dead
+                                    and not kitty.outside
+                                    and not kitty.exiled
+                                ),
+                                Cat.all_cats.values(),
+                            )
+                        )
+                        # finds a percentage of the living Clan to become shaken
+
+                        if len(alive_cats) == 0:
+                            return
+                        else:
+                            shaken_cats = random.sample(
+                                alive_cats,
+                                k=max(
+                                    int((len(alive_cats) * random.randint(4, 6)) / 100),
+                                    1,
+                                ),
+                            )
+
+                        shaken_cat_names = []
+                        for cat in shaken_cats:
+                            shaken_cat_names.append(str(cat.name))
+                            cat.get_injured(
+                                "shock",
+                                event_triggered=False,
+                                lethal=False,
+                                severity="minor",
+                            )
+
+                        insert = adjust_list_text(shaken_cat_names)
+
+                        extra_event = i18n.t(
+                            "hardcoded.event_shaken_grief",
+                            count=len(shaken_cat_names),
+                            insert=insert,
+                        )
+                else:
+                    event = i18n.t("hardcoded.event_deaths", count=1)
+
+            elif(game.clan.instructor.df is True):
+                if len(Cat.dead_cats) > 1:
+                    event = i18n.t(
+                        "hardcoded.event_deaths_df", count=len(Cat.dead_cats), insert=insert
+                    )
+
+                    if len(ghost_names) > 2:
+                        alive_cats = list(
+                            filter(
+                                lambda kitty: (
+                                    kitty.status != "leader"
+                                    and not kitty.dead
+                                    and not kitty.outside
+                                    and not kitty.exiled
+                                ),
+                                Cat.all_cats.values(),
+                            )
+                        )
+                        # finds a percentage of the living Clan to become shaken
+
+                        if len(alive_cats) == 0:
+                            return
+                        else:
+                            shaken_cats = random.sample(
+                                alive_cats,
+                                k=max(
+                                    int((len(alive_cats) * random.randint(4, 6)) / 100),
+                                    1,
+                                ),
+                            )
+
+                        shaken_cat_names = []
+                        for cat in shaken_cats:
+                            shaken_cat_names.append(str(cat.name))
+                            cat.get_injured(
+                                "shock",
+                                event_triggered=False,
+                                lethal=False,
+                                severity="minor",
+                            )
+
+                        insert = adjust_list_text(shaken_cat_names)
+
+                        extra_event = i18n.t(
+                            "hardcoded.event_shaken_grief",
+                            count=len(shaken_cat_names),
+                            insert=insert,
+                        )
+
+                else:
+                    event = i18n.t("hardcoded.event_deaths_df", count=1)
 
             game.cur_events_list.append(
                 Single_Event(
@@ -1258,27 +1310,33 @@ class Events:
             # MADE APP CEREMONY ---------------------------------------
             # A bit unruly however early_age needs two checks, for kits on clan
             # creation who are 4 moons and who are 5 moons. Without them, they would
-            # stay apprentices forever.
-            if game.clan and game.clan.made_app_age == "early_age":
-                if cat.moons == game.config["made_apprentice_age"]["ages"]["early"]:
-                    self.handle_checking_app(cat)
-                elif (
-                    cat.status == "kitten" 
-                    and cat.moons >= game.config["made_apprentice_age"]["ages"]["early"]
-                    and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"] #for cats who were 4 moons on init
-                ):
-                    self.handle_checking_app(cat)
-                elif (
-                    cat.moons == 6 #Should make an enum, sorry jygnn: for cats who were 5 moons on init
+            # keep having the kitten status
+            
+            #Check if the cat is a kitten, this is for early and normal(which is how it was pre-dating this)
+            if cat.age == CatAgeEnum.KITTEN:
+                if game.clan.made_app_age == "early_age":
+                    if cat.moons == game.config["made_apprentice_age"]["early"]:
+                        self.handle_checking_app(cat)
+                    elif (
+                        cat.moons >= game.config["made_apprentice_age"]["early"]
+                        and cat.status == "kitten" 
+                        and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"] #for cats who were 4 moons on init
+                    ):
+                        self.handle_checking_app(cat)
+                    elif (
+                        cat.moons == CatAgeEnum.ADOLESCENT[0] #for cats who were 5 moons on init
+                        and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"]
+                    ):
+                        self.handle_checking_app(cat)
+                elif game.clan.made_app_age == "normal_age":
+                    if cat.moons == game.config["made_apprentice_age"]["normal"]:
+                        self.handle_checking_app(cat)
+            elif cat.age == CatAgeEnum.ADOLESCENT:    
+                if (
+                    game.clan.made_app_age == "late_age"
+                    and cat.moons == game.config["made_apprentice_age"]["late"]
                     and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"]
                 ):
-                    self.handle_checking_app(cat)
-            elif game.clan and game.clan.made_app_age == "normal_age":
-                if cat.moons == game.config["made_apprentice_age"]["ages"]["normal"]:
-                    self.handle_checking_app(cat)
-            
-            elif game.clan and game.clan.made_app_age == "late_age":
-                if cat.moons == game.config["made_apprentice_age"]["ages"]["late"]:
                     self.handle_checking_app(cat)
            
             # graduate
