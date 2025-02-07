@@ -1313,13 +1313,13 @@ class Events:
             # keep having the kitten status
             
             #Check if the cat is a kitten, this is for early and normal(which is how it was pre-dating this)
-            if cat.age == CatAgeEnum.KITTEN:
+            if cat.status == "kitten":
                 if game.clan.made_app_age == "early_age":
                     if cat.moons == game.config["made_apprentice_age"]["early"]:
                         self.handle_checking_app(cat)
                     elif (
                         cat.moons >= game.config["made_apprentice_age"]["early"]
-                        and cat.status == "kitten" 
+                        and cat.status == "kitten"
                         and cat.status not in ["apprentice", "medicine cat apprentice", "mediator apprentice"] #for cats who were 4 moons on init
                     ):
                         self.handle_checking_app(cat)
@@ -1331,7 +1331,7 @@ class Events:
                 elif game.clan.made_app_age == "normal_age":
                     if cat.moons == game.config["made_apprentice_age"]["normal"]:
                         self.handle_checking_app(cat)
-            elif cat.age == CatAgeEnum.ADOLESCENT:    
+            elif cat.age == CatAgeEnum.ADOLESCENT:
                 if (
                     game.clan.made_app_age == "late_age"
                     and cat.moons == game.config["made_apprentice_age"]["late"]
